@@ -6,14 +6,14 @@ class Test {
     getInfo () {
         return {
             "id": 'test',
-            "name": 'test'
+            "name": 'test',
             "blocks": [
-				{
-                	"opcode": 'linkState',
+		{
+                    "opcode": 'test',
                     "blockType": "reporter",
-                    "text": 'Link Status'
+                    "text": 'test'
                 }
-			]
+	    ]
         };
     };
 };
