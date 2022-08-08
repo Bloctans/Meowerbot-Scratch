@@ -53,6 +53,8 @@ class Cloudlink {
 let is_authed = false
 let cl_js = null
 
+let connected = false
+
 class MBotS {
     constructor (runtime, extensionId) {
 		this.runtime = runtime;
@@ -97,7 +99,7 @@ class MBotS {
 	     {
 		"opcode":"on_connect",
 		"blockType": "hat",
-		"text": "On connection"
+		"text": "On connection to Server:"
              },
 	     {
 		"opcode":"sendpacket",
@@ -114,8 +116,16 @@ class MBotS {
         };
     };
 	
+    on_connect() {
+	if (connected)  {
+		return true;	
+	} else {
+		return false;
+	}
+    }
+	    
     login({USR, psw}) {
-        cljs.send({ cmd: "direct", val: {cmd: "authpswd", val: {username: USR, pswd: psw}}, listener: "authpswd"})
+        cl_js.send({ cmd: "direct", val: {cmd: "authpswd", val: {username: USR, pswd: psw}}, listener: "authpswd"})
     }
 	
     connect({SVR}) {
@@ -125,7 +135,11 @@ class MBotS {
         function ping() {
             cl_js.send({cmd: "ping", val: ""})
         }
-        setInterval(ping, 10000)    
+        setInterval(ping, 10000) 
+	    
+	cl_js.on('connected', () => {
+		connected = true
+	})
     }
 	
     hbres() {
