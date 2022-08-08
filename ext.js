@@ -63,7 +63,7 @@ class MBotS {
 		{
                     "opcode": 'connect',
                     "blockType": "command",
-                    "text": 'Connect To The Server',
+                    "text": 'Connect To The Server: [SVR]',
 		    "arguments": {
 			"SVR": {
 			   "type": "string",
