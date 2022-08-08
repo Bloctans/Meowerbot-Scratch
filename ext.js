@@ -85,10 +85,25 @@ class MBotS {
 				     "defaultValue": '',
 			}
 		}
+             },
+	     {
+		"opcode":"hbres",
+		"blocktype": "hat",
+		"text": "Test hat [t]",
+		"arguments": {
+			"t": {
+			     "type": "string",
+			     "defaultValue": '',
+			}
+		}
              }
 	   ]
         };
     };
+	
+    hbres() {
+	return true;    
+    }
 };
 
 (function() {
