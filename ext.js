@@ -50,6 +50,9 @@ class Cloudlink {
     }
 }
 
+let is_authed = false
+let cl_js = null
+
 class MBotS {
     constructor (runtime, extensionId) {
 		this.runtime = runtime;
@@ -100,6 +103,16 @@ class MBotS {
 	   ]
         };
     };
+	
+    connect() {
+	cl_js = new Cloudlink("ws://127.0.0.1:3000/");
+        is_authed = false;
+
+        function ping() {
+            cl_js.send({cmd: "ping", val: ""})
+        }
+        setInterval(ping, 10000)    
+    }
 	
     hbres() {
 	return true;    
