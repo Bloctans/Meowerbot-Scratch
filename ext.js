@@ -5,7 +5,7 @@ class MBotS {
 
     getInfo () {
         return {
-            "id": 'meowerbot-scratch',
+            "id": 'meowerbot',
             "name": 'Meower Bot',
             "blocks": [
 		{
