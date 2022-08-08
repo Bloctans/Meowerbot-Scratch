@@ -83,11 +83,11 @@ class MBotS {
 		"arguments": {
 			"USR": {
 			     "type": "string",
-			     "defaultValue": ' ',
+			     "defaultValue": 'mbscratch_default',
 			},
 			"psw": {
 				     "type": "string",
-				     "defaultValue": ' ',
+				     "defaultValue": 'mbscratch_default',
 			}
 		}
              },
