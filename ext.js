@@ -94,7 +94,7 @@ class MBotS {
 	     {
 		"opcode":"on_auth",
 		"blockType": "hat",
-		"text": "On auth"
+		"text": "On Authentication:"
              },
 	     {
 		"opcode":"on_connect",
@@ -112,9 +112,32 @@ class MBotS {
 			}
 		}
              },
+	     {
+		"opcode":"sendmsg",
+		"blockType": "command",
+		"text": "Send message of [msg]",
+		"arguments": {
+			"msg": {
+			     "type": "string",
+			     "defaultValue": 'Test!',
+			}
+		}
+             },
 	   ]
         };
     };
+	
+    sendmsg({msg}) {
+	cljs.send({cmd: "direct", val: {cmd: "post_home", val: msg}, listener: "post_home"})
+    }
+	
+    on_auth() {
+	if (is_authed) {
+		return true;
+	} else {
+		return false;
+	}
+    }
 	
     on_connect() {
 	if (connected)  {
@@ -126,6 +149,14 @@ class MBotS {
 	    
     login({USR, psw}) {
         cl_js.send({ cmd: "direct", val: {cmd: "authpswd", val: {username: USR, pswd: psw}}, listener: "authpswd"})
+	cljs.on('direct', (data) => {
+            if (data.listener == "authpswd") {
+                console.log(data.val)
+                if (data.val.mode == "auth") {
+                    is_authed = true;
+                }
+            }
+       })
     }
 	
     connect({SVR}) {
