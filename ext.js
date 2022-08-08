@@ -104,8 +104,8 @@ class MBotS {
         };
     };
 	
-    connect() {
-	cl_js = new Cloudlink("ws://127.0.0.1:3000/");
+    connect({SVR}) {
+	cl_js = new Cloudlink(SVR);
         is_authed = false;
 
         function ping() {
