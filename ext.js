@@ -73,7 +73,7 @@ class MBotS {
 	    },
             {
 		"opcode":"login",
-		"blocktype": "command",
+		"blockType": "command",
 		"text": "Login to Meower as The user: [USR] password: [psw]",
 		"arguments": {
 			"USR": {
@@ -88,7 +88,7 @@ class MBotS {
              },
 	     {
 		"opcode":"hbres",
-		"blocktype": "hat",
+		"blockType": "hat",
 		"text": "Test hat [t]",
 		"arguments": {
 			"t": {
