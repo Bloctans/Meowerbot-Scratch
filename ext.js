@@ -60,32 +60,31 @@ class MBotS {
             "id": 'meowerbot',
             "name": 'Meower Bot',
             "blocks": [
-		    {
-                    "opcode": 'connect',
-                    "blockType": "command",
-                    "text": 'Connect To The Server: [SVR]',
-		            "arguments": {
-			            "SVR": {
-			                "type": "string",
-			                "defaultValue": 'ws://server.meower.org',
-			            }
-                    }
-		    },
-            
+	    {
+		    "opcode": 'connect',
+		    "blockType": "command",
+		    "text": 'Connect To The Server: [SVR]',
+			    "arguments": {
+				    "SVR": {
+					"type": "string",
+					"defaultValue": 'ws://server.meower.org',
+				    }
+		    }
+	    },
             {
-                "opcode":"login",
-                "blocktype": "command",
-                "text": "login to meower [USR] [psw]",
-                "arguments": {
+		"opcode":"login",
+		"blocktype": "command",
+		"text": "Login to Meower as The user: [USR] password: [psw]",
+		"arguments": {
 			"USR": {
 			     "type": "string",
-			     "defaultValue": 'a',
-                	},
+			     "defaultValue": '',
+			},
 			"psw": {
 				     "type": "string",
-				     "defaultValue": 'a',
+				     "defaultValue": '',
 			}
-                }
+		}
              }
 	   ]
         };
