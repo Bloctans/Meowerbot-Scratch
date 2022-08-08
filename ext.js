@@ -128,7 +128,7 @@ class MBotS {
     };
 	
     sendmsg({msg}) {
-	cljs.send({cmd: "direct", val: {cmd: "post_home", val: msg}, listener: "post_home"})
+	cl_js.send({cmd: "direct", val: {cmd: "post_home", val: msg}, listener: "post_home"})
     }
 	
     on_auth() {
