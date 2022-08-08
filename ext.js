@@ -81,28 +81,42 @@ class MBotS {
 		"arguments": {
 			"USR": {
 			     "type": "string",
-			     "defaultValue": '',
+			     "defaultValue": ' ',
 			},
 			"psw": {
 				     "type": "string",
-				     "defaultValue": '',
+				     "defaultValue": ' ',
 			}
 		}
              },
 	     {
-		"opcode":"hbres",
+		"opcode":"on_auth",
 		"blockType": "hat",
-		"text": "Test hat [t]",
+		"text": "On auth"
+             },
+	     {
+		"opcode":"on_connect",
+		"blockType": "hat",
+		"text": "On connection"
+             },
+	     {
+		"opcode":"sendpacket",
+		"blockType": "command",
+		"text": "Send raw packet [packet]",
 		"arguments": {
-			"t": {
+			"packet": {
 			     "type": "string",
-			     "defaultValue": '',
+			     "defaultValue": ' ',
 			}
 		}
-             }
+             },
 	   ]
         };
     };
+	
+    login({USR, psw}) {
+        cljs.send({ cmd: "direct", val: {cmd: "authpswd", val: {username: USR, pswd: psw}}, listener: "authpswd"})
+    }
 	
     connect({SVR}) {
 	cl_js = new Cloudlink(SVR);
