@@ -149,9 +149,9 @@ class MBotS {
 	    
     login({USR, psw}) {
         cl_js.send({ cmd: "direct", val: {cmd: "authpswd", val: {username: USR, pswd: psw}}, listener: "authpswd"})
-	cljs.on('direct', (data) => {
+	cl_js.on('direct', (data) => {
             if (data.listener == "authpswd") {
-                console.log(data.val)
+                console.log("auth found")
                 if (data.val.mode == "auth") {
                     is_authed = true;
                 }
