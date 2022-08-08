@@ -1,30 +1,32 @@
-class NitroBlock {
-    getInfo() {
+class Test {
+    constructor (runtime, extensionId) {
+		this.runtime = runtime;
+    }
+
+    getInfo () {
         return {
-            "id": "NitroBlock",
-            "name": "NitroBlock",
-            "blocks": [{
-                    "opcode": "substringy",
+            "id": 'test',
+            "name": 'test'
+            "blocks": [
+				{
+                	"opcode": 'linkState',
                     "blockType": "reporter",
-                    "text": "letters [num1] through [num2] of [string]",
-                    "arguments": {
-                        "num1": {
-                            "type": "number",
-                            "defaultValue": "2"
-                        },
-                        "num2": {
-                            "type": "number",
-                            "defaultValue": "5"
-                        },
-                        "string": {
-                            "type": "string",
-                            "defaultValue": "hello world"
-                        }
-                    }
-                },
-            }],
-        "menus": { //we will get back to this in a later tutorial
-        }
+                    "text": 'Link Status'
+                }
+			]
+        };
     };
-}
-Scratch.extensions.register(new NitroBlock());
+};
+
+(function() {
+    var extensionClass = Test;
+    if (typeof window === "undefined" || !window.vm) {
+        Scratch.extensions.register(new extensionClass());
+		console.log("Sandboxed mode detected, performance will suffer because of the extension being sandboxed.");
+    } else {
+        var extensionInstance = new extensionClass(window.vm.extensionManager.runtime);
+        var serviceName = window.vm.extensionManager._registerInternalExtension(extensionInstance);
+        window.vm.extensionManager._loadedExtensions.set(extensionInstance.getInfo().id, serviceName);
+		console.log("Unsandboxed mode detected. Good.");
+    };
+})()
