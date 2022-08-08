@@ -1,17 +1,17 @@
-class Test {
+class MBotS {
     constructor (runtime, extensionId) {
 		this.runtime = runtime;
     }
 
     getInfo () {
         return {
-            "id": 'test',
-            "name": 'test',
+            "id": 'meowerbot-scratch',
+            "name": 'Meower Bot',
             "blocks": [
 		{
                     "opcode": 'test',
-                    "blockType": "reporter",
-                    "text": 'test'
+                    "blockType": "command",
+                    "text": 'lol'
                 }
 	    ]
         };
@@ -19,7 +19,7 @@ class Test {
 };
 
 (function() {
-    var extensionClass = Test;
+    var extensionClass = MBotS;
     if (typeof window === "undefined" || !window.vm) {
         Scratch.extensions.register(new extensionClass());
 		console.log("Sandboxed mode detected, performance will suffer because of the extension being sandboxed.");
