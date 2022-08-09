@@ -1,3 +1,5 @@
+// Type your JavaScript code here.
+
 class Cloudlink {
     constructor(server) {
         this.events = {};
@@ -53,6 +55,11 @@ class Cloudlink {
 let is_authed = false
 let cl_js = null
 
+let recpacket = " "
+let ulist = " "
+
+let newpacket = false
+
 let connected = false
 
 class MBotS {
@@ -72,11 +79,21 @@ class MBotS {
 			    "arguments": {
 				    "SVR": {
 					"type": "string",
-					"defaultValue": 'ws://server.meower.org',
+					"defaultValue": 'wss://server.meower.org',
 				    }
 		    }
 	    },
-            {
+        {
+		    "opcode": 'currpacket',
+		    "blockType": "reporter",
+		    "text": 'Recent Packet',
+	    },
+        {
+		    "opcode": 'ulist',
+		    "blockType": "reporter",
+		    "text": 'User list',
+	    },
+        {
 		"opcode":"login",
 		"blockType": "command",
 		"text": "Login to Meower as The user: [USR] password: [psw]",
@@ -123,33 +140,84 @@ class MBotS {
 			}
 		}
              },
+        {
+					"opcode": 'parseJSON',
+					"blockType": "reporter",
+					"text": '[PATH] of [JSON_STRING]',
+					"arguments": {
+						"PATH": {
+							"type": "string",
+							"defaultValue": 'fruit/apples',
+						},
+						"JSON_STRING": {
+							"type": "string",
+							"defaultValue": '{"fruit": {"apples": 2, "bananas": 3}, "total_fruit": 5}',
+						},
+					},
+				},
 	   ]
         };
     };
 	
     sendmsg({msg}) {
-	cl_js.send({cmd: "direct", val: {cmd: "post_home", val: msg}, listener: "post_home"})
+	    cl_js.send({cmd: "direct", val: {cmd: "post_home", val: msg}, listener: "post_home"})
     }
 	
+    parseJSON({
+		PATH,
+		JSON_STRING
+	}) {
+		try {
+			const path = PATH.toString().split('/').map(prop => decodeURIComponent(prop));
+			if (path[0] === '') path.splice(0, 1);
+			if (path[path.length - 1] === '') path.splice(-1, 1);
+			let json;
+			try {
+				json = JSON.parse(' ' + JSON_STRING);
+			} catch (e) {
+				return e.message;
+			};
+			path.forEach(prop => json = json[prop]);
+			if (json === null) return 'null';
+			else if (json === undefined) return '';
+			else if (typeof json === 'object') return JSON.stringify(json);
+			else return json.toString();
+		} catch (err) {
+			return '';
+		};
+	};
+
     on_auth() {
-	if (is_authed) {
-		return true;
-	} else {
-		return false;
-	}
+        if (is_authed) {
+            return true;
+        } else {
+            return false;
+        }
     }
 	
     on_connect() {
-	if (connected)  {
-		return true;	
-	} else {
-		return false;
-	}
+        if (connected)  {
+            return true;	
+        } else {
+            return false;
+        }
+    }
+
+    sendpacket({packet}) {
+        cl_js.send(packet)
+    }
+
+    currpacket() {
+        return JSON.stringify(recpacket)
+    }
+
+    ulist() {
+        return ulist
     }
 	    
     login({USR, psw}) {
         cl_js.send({ cmd: "direct", val: {cmd: "authpswd", val: {username: USR, pswd: psw}}, listener: "authpswd"})
-	cl_js.on('direct', (data) => {
+	    cl_js.on('direct', (data) => {
             if (data.listener == "authpswd") {
                 console.log("auth found")
                 if (data.val.mode == "auth") {
@@ -160,21 +228,25 @@ class MBotS {
     }
 	
     connect({SVR}) {
-	cl_js = new Cloudlink(SVR);
-        is_authed = false;
+        cl_js = new Cloudlink(SVR);
+            is_authed = false;
 
-        function ping() {
-            cl_js.send({cmd: "ping", val: ""})
-        }
-        setInterval(ping, 10000) 
-	    
-	cl_js.on('connected', () => {
-		connected = true
-	})
-    }
-	
-    hbres() {
-	return true;    
+            function ping() {
+                cl_js.send({cmd: "ping", val: ""})
+            }
+            setInterval(ping, 10000) 
+            
+        cl_js.on('connected', () => {
+            connected = true
+        })
+
+        cl_js.on('direct', (data) => {
+            recpacket = data
+        })
+
+        cl_js.on('ulist', (data) => {
+            ulist = data.val
+        })
     }
 };
 
