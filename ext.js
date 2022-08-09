@@ -1,4 +1,5 @@
 // Type your JavaScript code here.
+// Type your JavaScript code here.
 
 class Cloudlink {
     constructor(server) {
@@ -155,6 +156,27 @@ class MBotS {
 						},
 					},
 				},
+                {
+                    "opcode": "ReplaceSubString",
+                    "blockType": "reporter",
+                    "text": "replace [replace] in [original] to [to]",
+                    "arguments": {
+                        "replace": {
+                            "type": "string",
+                            "defaultValue": "foo"
+                        },
+                        "original": {
+                            "type": "string",
+                            "defaultValue": "the land of foos"
+                        },
+                        "to": {
+                            "type": "string",
+                            "defaultValue": "bar"
+
+                        }
+                    }
+                },
+
 	   ]
         };
     };
@@ -186,7 +208,12 @@ class MBotS {
 			return '';
 		};
 	};
+    ReplaceSubString({replace, original, to}) {
+        var a = original.toString().replace(replace, to);
 
+        return a;
+    }
+    
     on_auth() {
         if (is_authed) {
             return true;
