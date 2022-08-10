@@ -1,6 +1,12 @@
 // Type your JavaScript code here.
 // Type your JavaScript code here.
 
+// ok so to add:
+// raw packet send
+// on new packet
+// split
+// http request
+
 class Cloudlink {
     constructor(server) {
         this.events = {};
