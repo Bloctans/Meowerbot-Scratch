@@ -65,7 +65,9 @@ let cl_js = null
 let recpacket = " "
 let ulist = " "
 
-let newpacket = false
+let oldpacket = " "
+let updatepacket = false
+let packethat = false
 
 let connected = false
 
@@ -182,8 +184,12 @@ class MBotS {
                         }
                     }
                 },
-
-	   ]
+                {
+                    "opcode": "on_packet",
+                    "blockType": "hat",
+                    "text": "On a server packet do:"
+                },
+        ]
         };
     };
 	
@@ -223,6 +229,15 @@ class MBotS {
     on_auth() {
         if (is_authed) {
             return true;
+        } else {
+            return false;
+        }
+    }
+
+    on_packet() {
+        if (packethat == true) {
+            return true;
+            packethat = false
         } else {
             return false;
         }
@@ -275,6 +290,7 @@ class MBotS {
 
         cl_js.on('direct', (data) => {
             recpacket = data
+            packethat = true
         })
 
         cl_js.on('ulist', (data) => {
