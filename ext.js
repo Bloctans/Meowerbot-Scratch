@@ -23,7 +23,7 @@ class Cloudlink {
                 cmd: 'direct',
                 val: { cmd: 'type', val: 'js' },
             });
-	        this.send({
+	    this.send({
                 cmd: 'direct',
                 val: "meower",
             });
