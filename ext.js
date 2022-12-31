@@ -277,12 +277,12 @@ class MBotS {
 	
     connect({SVR}) {
         cl_js = new Cloudlink(SVR);
-            is_authed = false;
+	is_authed = false;
 
-            function ping() {
-                cl_js.send({cmd: "ping", val: ""})
-            }
-            setInterval(ping, 10000) 
+	function ping() {
+		cl_js.send({cmd: "ping", val: ""})
+	}
+	setInterval(ping, 10000) 
             
         cl_js.on('connected', () => {
             connected = true
@@ -303,11 +303,11 @@ class MBotS {
     var extensionClass = MBotS;
     if (typeof window === "undefined" || !window.vm) {
         Scratch.extensions.register(new extensionClass());
-		console.log("Sandboxed mode detected, performance will suffer because of the extension being sandboxed.");
+	console.log("Sandboxed mode detected, performance will suffer because of the extension being sandboxed.");
     } else {
         var extensionInstance = new extensionClass(window.vm.extensionManager.runtime);
         var serviceName = window.vm.extensionManager._registerInternalExtension(extensionInstance);
         window.vm.extensionManager._loadedExtensions.set(extensionInstance.getInfo().id, serviceName);
-		console.log("Unsandboxed mode detected. Good.");
+	console.log("Unsandboxed mode detected. Good.");
     };
 })()
