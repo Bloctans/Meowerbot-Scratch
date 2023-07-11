@@ -10,23 +10,18 @@
 class Cloudlink {
     constructor(server) {
         this.events = {};
+        this.pingIntervalId = null;
         this.ws = new WebSocket(server);
         this.ws.onopen = async () => {
             this.send({
                 cmd: 'direct',
-                val: {
-                    cmd: 'ip',
-                    val: await (await fetch('https://api.meower.org/ip')).text(),
-                },
-            });
-            this.send({
-                cmd: 'direct',
                 val: { cmd: 'type', val: 'js' },
             });
-	    this.send({
+	        this.send({
                 cmd: 'direct',
                 val: "meower",
             });
+            this.pingIntervalId = setInterval(this.ping, 10000);
             this.emit('connected');
         };
         this.ws.onmessage = (socketdata) => {
@@ -35,6 +30,7 @@ class Cloudlink {
             this.emit(data.cmd, data);
         };
         this.ws.onclose = () => {
+            clearInterval(this.pingIntervalId);
             this.emit('disconnected');
         };
         this.ws.onerror = (e) => {
@@ -43,6 +39,9 @@ class Cloudlink {
     }
     send(data) {
         this.ws.send(JSON.stringify(data));
+    }
+    ping() {
+        cljs.send({cmd: "ping", val: ""});  // bruh why can't js get context within an interval
     }
     on(event, cb) {
         if (typeof this.events[event] !== 'object')
@@ -59,17 +58,17 @@ class Cloudlink {
     }
 }
 
-let is_authed = false
-let cl_js = null
+let isAuthed = false;
+let cljs = null;
 
-let recpacket = " "
-let ulist = " "
+let recPacket = "";
+let ulist = "";
 
-let oldpacket = " "
-let updatepacket = false
-let packethat = false
+let oldPacket = "";
+let updatePacket = false;
+let packetHat = false;
 
-let connected = false
+let connected = false;
 
 class MBotS {
     constructor (runtime, extensionId) {
@@ -84,7 +83,7 @@ class MBotS {
 	    {
 		    "opcode": 'connect',
 		    "blockType": "command",
-		    "text": 'Connect To The Server: [SVR]',
+		    "text": 'Connect to [SVR]',
 			    "arguments": {
 				    "SVR": {
 					"type": "string",
@@ -93,19 +92,24 @@ class MBotS {
 		    }
 	    },
         {
+		    "opcode": 'disconnect',
+		    "blockType": "command",
+		    "text": 'Disconnect'
+	    },
+        {
 		    "opcode": 'currpacket',
 		    "blockType": "reporter",
-		    "text": 'Recent Packet',
+		    "text": 'Latest packet',
 	    },
         {
 		    "opcode": 'ulist',
 		    "blockType": "reporter",
-		    "text": 'User list',
+		    "text": 'Online users list',
 	    },
         {
 		"opcode":"login",
 		"blockType": "command",
-		"text": "Login to Meower as The user: [USR] password: [psw]",
+		"text": "Login to Meower as [USR] with password [psw]",
 		"arguments": {
 			"USR": {
 			     "type": "string",
@@ -120,12 +124,12 @@ class MBotS {
 	     {
 		"opcode":"on_auth",
 		"blockType": "hat",
-		"text": "On Authentication:"
+		"text": "When authenticated"
              },
 	     {
 		"opcode":"on_connect",
 		"blockType": "hat",
-		"text": "On connection to Server:"
+		"text": "When connected"
              },
 	     {
 		"opcode":"sendpacket",
@@ -134,19 +138,23 @@ class MBotS {
 		"arguments": {
 			"packet": {
 			     "type": "string",
-			     "defaultValue": ' ',
+			     "defaultValue": '',
 			}
 		}
              },
 	     {
-		"opcode":"sendmsg",
+		"opcode":"sendPost",
 		"blockType": "command",
-		"text": "Send message of [msg]",
+		"text": "Send post to [channel] with content [content]",
 		"arguments": {
-			"msg": {
+			"channel": {
 			     "type": "string",
-			     "defaultValue": 'Test!',
-			}
+			     "defaultValue": "home",
+			},
+            "content": {
+                "type": "string",
+                "defaultValue": "Hello world!"
+            }
 		}
              },
         {
@@ -187,14 +195,18 @@ class MBotS {
                 {
                     "opcode": "on_packet",
                     "blockType": "hat",
-                    "text": "On a server packet do:"
+                    "text": "When new server packet received"
                 },
         ]
         };
     };
 	
-    sendmsg({msg}) {
-	    cl_js.send({cmd: "direct", val: {cmd: "post_home", val: msg}, listener: "post_home"})
+    sendPost({channel, content}) {
+        if (channel == 'home') {
+            cljs.send({cmd: "direct", val: {cmd: "post_home", val: content}, listener: "send_post"});
+        } else {
+            cljs.send({cmd: "direct", val: {cmd: "post_chat", val: {chatid: channel, p: content}}, listener: "send_post"});
+        }
     }
 	
     parseJSON({
@@ -207,7 +219,7 @@ class MBotS {
 			if (path[path.length - 1] === '') path.splice(-1, 1);
 			let json;
 			try {
-				json = JSON.parse(' ' + JSON_STRING);
+				json = JSON.parse('' + JSON_STRING);
 			} catch (e) {
 				return e.message;
 			};
@@ -227,7 +239,7 @@ class MBotS {
     }
     
     on_auth() {
-        if (is_authed) {
+        if (isAuthed) {
             return true;
         } else {
             return false;
@@ -235,9 +247,9 @@ class MBotS {
     }
 
     on_packet() {
-        if (packethat == true) {
+        if (packetHat == true) {
             return true;
-            packethat = false
+            packetHat = false
         } else {
             return false;
         }
@@ -252,11 +264,11 @@ class MBotS {
     }
 
     sendpacket({packet}) {
-        cl_js.send(packet)
+        cljs.send(packet)
     }
 
     currpacket() {
-        return JSON.stringify(recpacket)
+        return JSON.stringify(recPacket)
     }
 
     ulist() {
@@ -264,38 +276,41 @@ class MBotS {
     }
 	    
     login({USR, psw}) {
-        cl_js.send({ cmd: "direct", val: {cmd: "authpswd", val: {username: USR, pswd: psw}}, listener: "authpswd"})
-	    cl_js.on('direct', (data) => {
+        cljs.send({ cmd: "direct", val: {cmd: "authpswd", val: {username: USR, pswd: psw}}, listener: "authpswd"})
+	    cljs.on('direct', (data) => {
             if (data.listener == "authpswd") {
                 console.log("auth found")
                 if (data.val.mode == "auth") {
-                    is_authed = true;
+                    isAuthed = true;
                 }
             }
        })
     }
 	
     connect({SVR}) {
-        cl_js = new Cloudlink(SVR);
-	is_authed = false;
-
-	function ping() {
-		cl_js.send({cmd: "ping", val: ""})
-	}
-	setInterval(ping, 10000) 
-            
-        cl_js.on('connected', () => {
-            connected = true
+        cljs = new Cloudlink(SVR);
+  
+        cljs.on('connected', () => {
+            connected = true;
         })
 
-        cl_js.on('direct', (data) => {
-            recpacket = data
-            packethat = true
+        cljs.on('disconnected', () => {
+            connected = false;
+            isAuthed = false;
         })
 
-        cl_js.on('ulist', (data) => {
-            ulist = data.val
+        cljs.on('direct', (data) => {
+            recPacket = data;
+            packetHat = true;
         })
+
+        cljs.on('ulist', (data) => {
+            ulist = data.val;
+        })
+    }
+
+    disconnect() {
+        cljs.disconnect();
     }
 };
 
