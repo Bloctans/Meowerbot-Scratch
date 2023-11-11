@@ -1,5 +1,3 @@
-Quick wrapper for cljs in scratch
+Terrible Meowerbot port in scratch
 
-My first scratch extension so expect issues
-
-Rarely updated
+May redo later
